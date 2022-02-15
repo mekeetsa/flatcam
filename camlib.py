@@ -3132,21 +3132,21 @@ class CNCjob(Geometry):
         self.gcode = []
 
         # Basic G-Code macros
-        t = "G00 " + CNCjob.defaults["coordinate_format"] + "\n"
-        down = "G01 Z%.4f\n" % self.z_cut
-        up = "G00 Z%.4f\n" % self.z_move
-        up_to_zero = "G01 Z0\n"
+        t = "G0 " + CNCjob.defaults["coordinate_format"] + "\n"
+        down = "G1 Z%.4f\n" % self.z_cut
+        up = "G0 Z%.4f\n" % self.z_move
+        up_to_zero = "G1 Z0\n"
 
         # Initialization
         gcode = self.unitcode[self.units.upper()] + "\n"
         gcode += self.absolutecode + "\n"
         gcode += self.feedminutecode + "\n"
         gcode += "F%.2f\n" % self.feedrate
-        gcode += "G00 Z%.4f\n" % self.z_move  # Move to travel height
+        gcode += "G0 Z%.4f\n" % self.z_move  # Move to travel height
 
         if self.spindlespeed is not None:
             # Spindle start with configured speed
-            gcode += "M03 S%d\n" % int(self.spindlespeed)
+            gcode += "M3 S%d\n" % int(self.spindlespeed)
         else:
             gcode += "M03\n"  # Spindle start
 
@@ -3158,7 +3158,7 @@ class CNCjob(Geometry):
             if tool in points:
                 # Tool change sequence (optional)
                 if toolchange:
-                    gcode += "G00 Z%.4f\n" % toolchangez
+                    gcode += "G0 Z%.4f\n" % toolchangez
                     gcode += "T%d\n" % int(tool)  # Indicate tool slot (for automatic tool changer)
                     gcode += "M5\n"  # Spindle Stop
                     gcode += "M6\n"  # Tool change
@@ -3166,7 +3166,7 @@ class CNCjob(Geometry):
                     gcode += "M0\n"  # Temporary machine stop
                     if self.spindlespeed is not None:
                         # Spindle start with configured speed
-                        gcode += "M03 S%d\n" % int(self.spindlespeed)
+                        gcode += "M3 S%d\n" % int(self.spindlespeed)
                     else:
                         gcode += "M03\n"  # Spindle start
 
@@ -3242,9 +3242,9 @@ class CNCjob(Geometry):
         self.gcode += self.absolutecode + "\n"
         self.gcode += self.feedminutecode + "\n"
         self.gcode += "F%.2f\n" % self.feedrate
-        self.gcode += "G00 Z%.4f\n" % self.z_move  # Move (up) to travel height
+        self.gcode += "G0 Z%.4f\n" % self.z_move  # Move (up) to travel height
         if self.spindlespeed is not None:
-            self.gcode += "M03 S%d\n" % int(self.spindlespeed)  # Spindle start with configured speed
+            self.gcode += "M3 S%d\n" % int(self.spindlespeed)  # Spindle start with configured speed
         else:
             self.gcode += "M03\n"  # Spindle start
         #self.gcode += self.pausecode + "\n"
@@ -3332,7 +3332,7 @@ class CNCjob(Geometry):
                             geo.coords = list(geo.coords)[::-1]
 
                     # Lift the tool
-                    self.gcode += "G00 Z%.4f\n" % self.z_move
+                    self.gcode += "G0 Z%.4f\n" % self.z_move
                     # self.gcode += "( End of path. )\n"
 
                 # Did deletion at the beginning.
@@ -3351,14 +3351,14 @@ class CNCjob(Geometry):
         log.debug("%s paths traced." % path_count)
 
         # Finish
-        self.gcode += "G00 Z%.4f\n" % self.z_move  # Stop cutting
-        self.gcode += "G00 X0Y0\n"
+        self.gcode += "G0 Z%.4f\n" % self.z_move  # Stop cutting
+        self.gcode += "G0 X0Y0\n"
         self.gcode += "M05\n"  # Spindle stop
 
     @staticmethod
     def codes_split(gline):
         """
-        Parses a line of G-Code such as "G01 X1234 Y987" into
+        Parses a line of G-Code such as "G1 X1234 Y987" into
         a dictionary: {'G': 1.0, 'X': 1234.0, 'Y': 987.0}
 
         :param gline: G-Code line string
@@ -3592,10 +3592,10 @@ class CNCjob(Geometry):
             # Different feedrate for vertical cut?
             if self.zdownrate is not None:
                 gcode += "F%.2f\n" % downrate
-                gcode += "G01 Z%.4f\n" % zcut       # Start cutting
+                gcode += "G1 Z%.4f\n" % zcut       # Start cutting
                 gcode += "F%.2f\n" % feedrate       # Restore feedrate
             else:
-                gcode += "G01 Z%.4f\n" % zcut       # Start cutting
+                gcode += "G1 Z%.4f\n" % zcut       # Start cutting
 
         # Cutting...
         for pt in path[1:]:
@@ -3603,7 +3603,7 @@ class CNCjob(Geometry):
 
         # Up to travelling height.
         if up:
-            gcode += "G00 Z%.4f\n" % ztravel  # Stop cutting
+            gcode += "G0 Z%.4f\n" % ztravel  # Stop cutting
 
         return gcode
 
@@ -3616,12 +3616,12 @@ class CNCjob(Geometry):
 
         if self.zdownrate is not None:
             gcode += "F%.2f\n" % self.zdownrate
-            gcode += "G01 Z%.4f\n" % self.z_cut       # Start cutting
+            gcode += "G1 Z%.4f\n" % self.z_cut       # Start cutting
             gcode += "F%.2f\n" % self.feedrate
         else:
-            gcode += "G01 Z%.4f\n" % self.z_cut       # Start cutting
+            gcode += "G1 Z%.4f\n" % self.z_cut       # Start cutting
 
-        gcode += "G00 Z%.4f\n" % self.z_move      # Stop cutting
+        gcode += "G0 Z%.4f\n" % self.z_move      # Stop cutting
         return gcode
 
     def scale(self, factor):
