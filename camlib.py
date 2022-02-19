@@ -3571,7 +3571,7 @@ class CNCjob(Geometry):
         if feedrate is None:
             feedrate = self.feedrate
 
-        t = "G0%d " + CNCjob.defaults["coordinate_format"] + "\n"
+        t = "G%d " + CNCjob.defaults["coordinate_format"] + "\n"
 
         # Simplify paths?
         if tolerance > 0:
@@ -3609,8 +3609,8 @@ class CNCjob(Geometry):
 
     def point2gcode(self, point):
         gcode = ""
-        #t = "G0%d X%.4fY%.4f\n"
-        t = "G0%d " + CNCjob.defaults["coordinate_format"] + "\n"
+        #t = "G%d X%.4fY%.4f\n"
+        t = "G%d " + CNCjob.defaults["coordinate_format"] + "\n"
         path = list(point.coords)
         gcode += t % (0, path[0][0], path[0][1])  # Move to first point
 
