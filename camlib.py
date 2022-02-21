@@ -1628,7 +1628,7 @@ class Gerber (Geometry):
         self.regionoff_re = re.compile(r'^G37\*$')
 
         # End of file
-        self.eof_re = re.compile(r'^M02\*')
+        self.eof_re = re.compile(r'^M0?2\*')
 
         # IP - Image polarity
         self.pol_re = re.compile(r'^%IP(POS|NEG)\*%$')
@@ -2666,7 +2666,7 @@ class Excellon(Geometry):
         self.rep_re = re.compile(r'^R(\d+)(?=.*[XY])+(?:X([-\+]?\d*\.?\d*))?(?:Y([-\+]?\d*\.?\d*))?$')
 
         # Various stop/pause commands
-        self.stop_re = re.compile(r'^((G04)|(M09)|(M06)|(M00)|(M30))')
+        self.stop_re = re.compile(r'^((G0?4)|(M0?9)|(M0?6)|(M0?0)|(M30))')
 
         # Parse coordinates
         self.leadingzeros_re = re.compile(r'^[-\+]?(0*)(\d*)')
@@ -3148,7 +3148,7 @@ class CNCjob(Geometry):
             # Spindle start with configured speed
             gcode += "M3 S%d\n" % int(self.spindlespeed)
         else:
-            gcode += "M03\n"  # Spindle start
+            gcode += "M3\n"  # Spindle start
 
         # gcode += self.pausecode + "\n"
 
@@ -3168,7 +3168,7 @@ class CNCjob(Geometry):
                         # Spindle start with configured speed
                         gcode += "M3 S%d\n" % int(self.spindlespeed)
                     else:
-                        gcode += "M03\n"  # Spindle start
+                        gcode += "M3\n"  # Spindle start
 
                 # Drillling!
                 for point in points[tool]:
@@ -3177,7 +3177,7 @@ class CNCjob(Geometry):
                     gcode += down + up_to_zero + up
 
         gcode += t % (0, 0)
-        gcode += "M05\n"  # Spindle stop
+        gcode += "M5\n"  # Spindle stop
 
         self.gcode = gcode
 
@@ -3246,7 +3246,7 @@ class CNCjob(Geometry):
         if self.spindlespeed is not None:
             self.gcode += "M3 S%d\n" % int(self.spindlespeed)  # Spindle start with configured speed
         else:
-            self.gcode += "M03\n"  # Spindle start
+            self.gcode += "M3\n"  # Spindle start
         #self.gcode += self.pausecode + "\n"
 
         ## Iterate over geometry paths getting the nearest each time.
@@ -3353,7 +3353,7 @@ class CNCjob(Geometry):
         # Finish
         self.gcode += "G0 Z%.4f\n" % self.z_move  # Stop cutting
         self.gcode += "G0 X0Y0\n"
-        self.gcode += "M05\n"  # Spindle stop
+        self.gcode += "M5\n"  # Spindle stop
 
     @staticmethod
     def codes_split(gline):
